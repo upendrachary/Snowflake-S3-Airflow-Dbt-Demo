@@ -112,6 +112,7 @@ services:
       --role Admin
       --email \"${_AIRFLOW_WWW_USER_EMAIL}\"
       "
+    command: version
 
 volumes:
   postgres-db-volume:
