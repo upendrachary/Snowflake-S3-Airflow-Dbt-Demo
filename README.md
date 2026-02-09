@@ -61,6 +61,9 @@ snowsql -a <ACCOUNT> -u <USER> -f scripts/snowflake_setup.sql
 2. Upload sample data (CSV) to `s3://snowflake-dbt-airflow/landing/events.csv`
 
 Sample CSV headers expected by the demo (see `data/sample_events.csv`):
+2. Upload sample data (CSV) to `s3://my-demo-bucket/landing/events.csv`
+
+Sample CSV headers expected by the demo:
 ```
 event_id,event_type,event_timestamp,user_id
 ```

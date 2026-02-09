@@ -90,6 +90,7 @@ services:
       - redis
     environment:
       <<: *airflow-common-env
+      *airflow-common-env
       _AIRFLOW_WWW_USER_USERNAME: airflow
       _AIRFLOW_WWW_USER_PASSWORD: airflow
       _AIRFLOW_WWW_USER_EMAIL: airflow@example.com
@@ -112,6 +113,7 @@ services:
       --role Admin
       --email \"${_AIRFLOW_WWW_USER_EMAIL}\"
       "
+    command: version
 
 volumes:
   postgres-db-volume:
