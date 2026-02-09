@@ -35,7 +35,7 @@ services:
       - ./airflow/logs:/opt/airflow/logs
       - ./airflow/plugins:/opt/airflow/plugins
     ports:
-      - "8080:8080"
+      - "8081:8081"
     command: webserver
 
   airflow-scheduler:
@@ -90,7 +90,6 @@ services:
       - redis
     environment:
       <<: *airflow-common-env
-      *airflow-common-env
       _AIRFLOW_WWW_USER_USERNAME: airflow
       _AIRFLOW_WWW_USER_PASSWORD: airflow
       _AIRFLOW_WWW_USER_EMAIL: airflow@example.com
