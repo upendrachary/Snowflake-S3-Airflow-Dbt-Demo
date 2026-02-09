@@ -89,6 +89,7 @@ services:
       - postgres
       - redis
     environment:
+      <<: *airflow-common-env
       *airflow-common-env
       _AIRFLOW_WWW_USER_USERNAME: airflow
       _AIRFLOW_WWW_USER_PASSWORD: airflow
