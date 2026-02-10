@@ -28,7 +28,7 @@ This repo provides a local development setup to orchestrate loading data from S3
    docker compose up airflow-init
    docker compose up
    ```
-   `airflow-init` creates/updates `aws_default` from `AIRFLOW_CONN_AWS_DEFAULT`, and `snowflake_default` from `SNOWFLAKE_*` fields in `.env`.
+   `airflow-init` creates/updates `aws_default` from `AIRFLOW_CONN_AWS_DEFAULT`, and `snowflake_demo` from `SNOWFLAKE_*` fields in `.env`.
 
 4. **Open Airflow UI**
    - Default URL: `http://localhost:8081`
@@ -42,7 +42,7 @@ This repo provides a local development setup to orchestrate loading data from S3
 5. **Configure Airflow connections**
    Create these connections in the Airflow UI or via environment variables:
    - `aws_default` (type: Amazon Web Services)
-   - `snowflake_default` (type: Snowflake)
+   - `snowflake_demo` (type: Snowflake)
 
    Example environment variables (set in `.env`):
    ```bash
@@ -58,8 +58,8 @@ This repo provides a local development setup to orchestrate loading data from S3
 
    Snowflake connection tips:
    - `ACCOUNT_IDENTIFIER` must be your Snowflake account identifier only (for example `GWUKURE-HQC09583`). Do **not** include `https://` or `.snowflakecomputing.com`.
-   - Airflow cannot use `externalbrowser` auth inside containers; use username/password (or key-pair auth) for `snowflake_default`.
-   - `airflow-init` now creates `snowflake_default` from these `SNOWFLAKE_*` fields (instead of parsing a URI), which avoids password URL-encoding issues.
+   - Airflow cannot use `externalbrowser` auth inside containers; use username/password (or key-pair auth) for `snowflake_demo`.
+   - `airflow-init` now creates `snowflake_demo` from these `SNOWFLAKE_*` fields (instead of parsing a URI), which avoids password URL-encoding issues.
    - Remove any old `AIRFLOW_CONN_SNOWFLAKE_DEFAULT` line from `.env`. If present, it overrides the UI/database connection and can cause `251001: Account must be specified` even when UI fields look correct.
 6. **Run the DAG**
    - Enable and trigger `s3_to_snowflake_demo` in Airflow.
@@ -123,10 +123,12 @@ Once you have Snowflake and AWS set up, update `.env`, set your Airflow connecti
 - The warning `the attribute `version` is obsolete` comes from Docker Compose V2 when a `version` field is present. This repo omits `version` to avoid that warning.
 - Long lists of `SyntaxWarning` messages from provider libraries during startup are non-fatal if webserver later shows `Listening at: http://0.0.0.0:8080`.
 
-- If task logs show `251001: Account must be specified`, the `snowflake_default` connection is missing the account field or has an invalid account format. Use only the Snowflake account identifier.
+- If task logs show `251001: Account must be specified`, the `snowflake_demo` connection is missing the account field or has an invalid account format. Use only the Snowflake account identifier.
 
-- If `snowflake_default` looks correct in UI but tasks still fail with `251001`, check `.env` and remove `AIRFLOW_CONN_SNOWFLAKE_DEFAULT`. Environment connection variables override Airflow metadata DB/UI connections.
+- If `snowflake_demo` looks correct in UI but tasks still fail with `251001`, check `.env` and remove `AIRFLOW_CONN_SNOWFLAKE_DEFAULT`. Environment connection variables override Airflow metadata DB/UI connections.
 
-- If Connection list is empty, rerun `docker compose up airflow-init` after updating `.env`. The init job writes `aws_default` and `snowflake_default` into Airflow metadata DB.
+- If Connection list is empty, rerun `docker compose up airflow-init` after updating `.env`. The init job writes `aws_default` and `snowflake_demo` into Airflow metadata DB.
 
 - If `airflow-init` exits early, check that `SNOWFLAKE_ACCOUNT`, `SNOWFLAKE_USER`, and `SNOWFLAKE_PASSWORD` in `.env` are not empty/placeholder values.
+
+- If Snowflake login URL in logs contains `.us-east-1.snowflakecomputing.com` (or another forced region) and returns `404 Not Found`, remove Region from Airflow Snowflake connection and use only `SNOWFLAKE_ACCOUNT` (org-account identifier) in `.env`, then rerun `docker compose up airflow-init`.

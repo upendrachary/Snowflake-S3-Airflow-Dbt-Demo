@@ -111,10 +111,10 @@ services:
       --email "$${_AIRFLOW_WWW_USER_EMAIL}" &&
       airflow connections delete aws_default || true &&
       airflow connections add aws_default --conn-uri "$${AIRFLOW_CONN_AWS_DEFAULT}" &&
-      airflow connections delete snowflake_default || true &&
+      airflow connections delete snowflake_demo || true &&
       test -n "$${SNOWFLAKE_ACCOUNT}" && test "$${SNOWFLAKE_ACCOUNT}" != "ACCOUNT_IDENTIFIER" &&
       test -n "$${SNOWFLAKE_USER}" && test -n "$${SNOWFLAKE_PASSWORD}" &&
-      airflow connections add snowflake_default
+      airflow connections add snowflake_demo
       --conn-type snowflake
       --conn-login "$${SNOWFLAKE_USER}"
       --conn-password "$${SNOWFLAKE_PASSWORD}"

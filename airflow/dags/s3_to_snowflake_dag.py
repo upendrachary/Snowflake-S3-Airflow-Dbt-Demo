@@ -33,7 +33,7 @@ with DAG(
 
     create_table = SnowflakeOperator(
         task_id="create_raw_table",
-        snowflake_conn_id="snowflake_default",
+        snowflake_conn_id="snowflake_demo",
         sql=f"""
         create table if not exists {database}.{schema}.{table} (
             event_id string,
@@ -46,7 +46,7 @@ with DAG(
 
     create_stage = SnowflakeOperator(
         task_id="create_external_stage",
-        snowflake_conn_id="snowflake_default",
+        snowflake_conn_id="snowflake_demo",
         sql=f"""
         create stage if not exists {database}.{schema}.{stage}
         url='s3://{s3_bucket}'
@@ -57,7 +57,7 @@ with DAG(
 
     load_from_s3 = SnowflakeOperator(
         task_id="load_s3_to_snowflake",
-        snowflake_conn_id="snowflake_default",
+        snowflake_conn_id="snowflake_demo",
         sql=f"""
         copy into {database}.{schema}.{table}
         from @{database}.{schema}.{stage}/{s3_key}
