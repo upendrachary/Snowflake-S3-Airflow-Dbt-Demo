@@ -1,0 +1,6 @@
+event_id,event_type,event_timestamp,user_id
+evt_001,signup,2024-01-05T10:15:00Z,user_1001
+evt_002,login,2024-01-05T10:20:00Z,user_1001
+evt_003,purchase,2024-01-06T12:05:00Z,user_1002
+evt_004,logout,2024-01-06T12:30:00Z,user_1001
+evt_005,signup,2024-01-07T09:00:00Z,user_1003
