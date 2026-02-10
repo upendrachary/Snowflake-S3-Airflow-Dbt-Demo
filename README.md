@@ -60,6 +60,7 @@ This repo provides a local development setup to orchestrate loading data from S3
    - `ACCOUNT_IDENTIFIER` must be your Snowflake account identifier only (for example `GWUKURE-HQC09583`). Do **not** include `https://` or `.snowflakecomputing.com`.
    - Airflow cannot use `externalbrowser` auth inside containers; use username/password (or key-pair auth) for `snowflake_default`.
    - `airflow-init` now creates `snowflake_default` from these `SNOWFLAKE_*` fields (instead of parsing a URI), which avoids password URL-encoding issues.
+   - Remove any old `AIRFLOW_CONN_SNOWFLAKE_DEFAULT` line from `.env`. If present, it overrides the UI/database connection and can cause `251001: Account must be specified` even when UI fields look correct.
 6. **Run the DAG**
    - Enable and trigger `s3_to_snowflake_demo` in Airflow.
    - Ensure `AWS_ACCESS_KEY_ID` and `AWS_SECRET_ACCESS_KEY` are set in `.env` (used to create the Snowflake external stage).
@@ -123,6 +124,8 @@ Once you have Snowflake and AWS set up, update `.env`, set your Airflow connecti
 - Long lists of `SyntaxWarning` messages from provider libraries during startup are non-fatal if webserver later shows `Listening at: http://0.0.0.0:8080`.
 
 - If task logs show `251001: Account must be specified`, the `snowflake_default` connection is missing the account field or has an invalid account format. Use only the Snowflake account identifier.
+
+- If `snowflake_default` looks correct in UI but tasks still fail with `251001`, check `.env` and remove `AIRFLOW_CONN_SNOWFLAKE_DEFAULT`. Environment connection variables override Airflow metadata DB/UI connections.
 
 - If Connection list is empty, rerun `docker compose up airflow-init` after updating `.env`. The init job writes `aws_default` and `snowflake_default` into Airflow metadata DB.
 
