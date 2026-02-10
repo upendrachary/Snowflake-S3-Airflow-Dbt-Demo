@@ -58,8 +58,8 @@ snowsql -a <ACCOUNT> -u <USER> -f scripts/snowflake_setup.sql
 
 ## AWS S3 setup
 
-1. Create a bucket (e.g., `my-demo-bucket`)
-2. Upload sample data (CSV) to `s3://snowflake-dbt-airflow/landing/events.csv`
+1. Create a bucket (e.g., `snowflake-dbt-airflow`)
+2. Upload sample data (CSV) to `s3://snowflake-dbt-airflow/sample_events.csv`
 
 Sample CSV headers expected by the demo (see `data/sample_events.csv`):
 ```

@@ -26,8 +26,8 @@ with DAG(
     schema = _get_variable("SNOWFLAKE_SCHEMA", "RAW")
     stage = _get_variable("SNOWFLAKE_STAGE", "DEMO_STAGE")
     table = _get_variable("SNOWFLAKE_TABLE", "EVENTS_RAW")
-    s3_bucket = _get_variable("S3_BUCKET", "my-demo-bucket")
-    s3_key = _get_variable("S3_KEY", "landing/events.csv")
+    s3_bucket = _get_variable("S3_BUCKET", "snowflake-dbt-airflow")
+    s3_key = _get_variable("S3_KEY", "sample_events.csv")
     aws_access_key_id = _get_variable("AWS_ACCESS_KEY_ID", "")
     aws_secret_access_key = _get_variable("AWS_SECRET_ACCESS_KEY", "")
 
