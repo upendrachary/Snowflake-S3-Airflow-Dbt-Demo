@@ -4,12 +4,13 @@ from datetime import datetime
 
 from airflow import DAG
 from airflow.models import Variable
+import os
+
 from airflow.providers.snowflake.operators.snowflake import SnowflakeOperator
-from airflow.providers.snowflake.transfers.s3_to_snowflake import S3ToSnowflakeOperator
 
 
 def _get_variable(name: str, fallback: str) -> str:
-    value = Variable.get(name, default_var=fallback)
+    value = Variable.get(name, default_var=os.getenv(name, fallback))
     return value
 
 
@@ -27,6 +28,8 @@ with DAG(
     table = _get_variable("SNOWFLAKE_TABLE", "EVENTS_RAW")
     s3_bucket = _get_variable("S3_BUCKET", "my-demo-bucket")
     s3_key = _get_variable("S3_KEY", "landing/events.csv")
+    aws_access_key_id = _get_variable("AWS_ACCESS_KEY_ID", "")
+    aws_secret_access_key = _get_variable("AWS_SECRET_ACCESS_KEY", "")
 
     create_table = SnowflakeOperator(
         task_id="create_raw_table",
@@ -41,17 +44,26 @@ with DAG(
         """,
     )
 
-    load_from_s3 = S3ToSnowflakeOperator(
-        task_id="load_s3_to_snowflake",
+    create_stage = SnowflakeOperator(
+        task_id="create_external_stage",
         snowflake_conn_id="snowflake_default",
-        s3_keys=[s3_key],
-        s3_bucket=s3_bucket,
-        table=table,
-        stage=stage,
-        schema=schema,
-        database=database,
-        file_format="(type = csv field_delimiter = ',' skip_header = 1)",
-        copy_options=["ON_ERROR=CONTINUE"],
+        sql=f"""
+        create stage if not exists {database}.{schema}.{stage}
+        url='s3://{s3_bucket}'
+        credentials=(aws_key_id='{aws_access_key_id}' aws_secret_key='{aws_secret_access_key}')
+        file_format=(type=csv field_delimiter=',' skip_header=1);
+        """,
     )
 
-    create_table >> load_from_s3
+    load_from_s3 = SnowflakeOperator(
+        task_id="load_s3_to_snowflake",
+        snowflake_conn_id="snowflake_default",
+        sql=f"""
+        copy into {database}.{schema}.{table}
+        from @{database}.{schema}.{stage}/{s3_key}
+        file_format=(type=csv field_delimiter=',' skip_header=1)
+        on_error=continue;
+        """,
+    )
+
+    create_table >> create_stage >> load_from_s3

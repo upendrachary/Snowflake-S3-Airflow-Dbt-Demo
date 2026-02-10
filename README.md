@@ -46,6 +46,7 @@ This repo provides a local development setup to orchestrate loading data from S3
 
 6. **Run the DAG**
    - Enable and trigger `s3_to_snowflake_demo` in Airflow.
+   - Ensure `AWS_ACCESS_KEY_ID` and `AWS_SECRET_ACCESS_KEY` are set in `.env` (used to create the Snowflake external stage).
 
 ## Snowflake setup
 
@@ -61,9 +62,6 @@ snowsql -a <ACCOUNT> -u <USER> -f scripts/snowflake_setup.sql
 2. Upload sample data (CSV) to `s3://snowflake-dbt-airflow/landing/events.csv`
 
 Sample CSV headers expected by the demo (see `data/sample_events.csv`):
-2. Upload sample data (CSV) to `s3://my-demo-bucket/landing/events.csv`
-
-Sample CSV headers expected by the demo:
 ```
 event_id,event_type,event_timestamp,user_id
 ```
