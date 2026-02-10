@@ -46,9 +46,12 @@ This repo provides a local development setup to orchestrate loading data from S3
    Example environment variables (set in `.env`):
    ```bash
    AIRFLOW_CONN_AWS_DEFAULT=aws://<AWS_ACCESS_KEY_ID>:<AWS_SECRET_ACCESS_KEY>@/?region_name=<AWS_REGION>
-   AIRFLOW_CONN_SNOWFLAKE_DEFAULT=snowflake://<USER>:<PASSWORD>@<ACCOUNT>/<DATABASE>/<SCHEMA>?warehouse=<WAREHOUSE>&role=<ROLE>
+   AIRFLOW_CONN_SNOWFLAKE_DEFAULT=snowflake://<USER>:<PASSWORD>@<ACCOUNT_IDENTIFIER>/<DATABASE>/<SCHEMA>?warehouse=<WAREHOUSE>&role=<ROLE>
    ```
 
+   Snowflake connection tips:
+   - `ACCOUNT_IDENTIFIER` must be your Snowflake account identifier only (for example `GWUKURE-HQC09583`). Do **not** include `https://` or `.snowflakecomputing.com`.
+   - Airflow cannot use `externalbrowser` auth inside containers; use username/password (or key-pair auth) for `snowflake_default`.
 6. **Run the DAG**
    - Enable and trigger `s3_to_snowflake_demo` in Airflow.
    - Ensure `AWS_ACCESS_KEY_ID` and `AWS_SECRET_ACCESS_KEY` are set in `.env` (used to create the Snowflake external stage).
@@ -110,3 +113,5 @@ Once you have Snowflake and AWS set up, update `.env`, set your Airflow connecti
 - If browser cannot open Airflow UI, run `docker compose ps` and check the `PORTS` column for `airflow-webserver` (for example `0.0.0.0:8081->8080/tcp` (or another host port)).
 - The warning `the attribute `version` is obsolete` comes from Docker Compose V2 when a `version` field is present. This repo omits `version` to avoid that warning.
 - Long lists of `SyntaxWarning` messages from provider libraries during startup are non-fatal if webserver later shows `Listening at: http://0.0.0.0:8080`.
+
+- If task logs show `251001: Account must be specified`, the `snowflake_default` connection is missing the account field or has an invalid account format. Use only the Snowflake account identifier.
