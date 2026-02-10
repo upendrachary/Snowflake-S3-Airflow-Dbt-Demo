@@ -28,6 +28,7 @@ This repo provides a local development setup to orchestrate loading data from S3
    docker compose up airflow-init
    docker compose up
    ```
+   `airflow-init` creates/updates `aws_default` from `AIRFLOW_CONN_AWS_DEFAULT`, and `snowflake_default` from `SNOWFLAKE_*` fields in `.env`.
 
 4. **Open Airflow UI**
    - Default URL: `http://localhost:8081`
@@ -46,12 +47,19 @@ This repo provides a local development setup to orchestrate loading data from S3
    Example environment variables (set in `.env`):
    ```bash
    AIRFLOW_CONN_AWS_DEFAULT=aws://<AWS_ACCESS_KEY_ID>:<AWS_SECRET_ACCESS_KEY>@/?region_name=<AWS_REGION>
-   AIRFLOW_CONN_SNOWFLAKE_DEFAULT=snowflake://<USER>:<PASSWORD>@<ACCOUNT_IDENTIFIER>/<DATABASE>/<SCHEMA>?warehouse=<WAREHOUSE>&role=<ROLE>
+   SNOWFLAKE_ACCOUNT=<ACCOUNT_IDENTIFIER>
+   SNOWFLAKE_USER=<USER>
+   SNOWFLAKE_PASSWORD=<PASSWORD>
+   SNOWFLAKE_WAREHOUSE=<WAREHOUSE>
+   SNOWFLAKE_DATABASE=<DATABASE>
+   SNOWFLAKE_SCHEMA=<SCHEMA>
+   SNOWFLAKE_ROLE=<ROLE>
    ```
 
    Snowflake connection tips:
    - `ACCOUNT_IDENTIFIER` must be your Snowflake account identifier only (for example `GWUKURE-HQC09583`). Do **not** include `https://` or `.snowflakecomputing.com`.
    - Airflow cannot use `externalbrowser` auth inside containers; use username/password (or key-pair auth) for `snowflake_default`.
+   - `airflow-init` now creates `snowflake_default` from these `SNOWFLAKE_*` fields (instead of parsing a URI), which avoids password URL-encoding issues.
 6. **Run the DAG**
    - Enable and trigger `s3_to_snowflake_demo` in Airflow.
    - Ensure `AWS_ACCESS_KEY_ID` and `AWS_SECRET_ACCESS_KEY` are set in `.env` (used to create the Snowflake external stage).
@@ -115,3 +123,7 @@ Once you have Snowflake and AWS set up, update `.env`, set your Airflow connecti
 - Long lists of `SyntaxWarning` messages from provider libraries during startup are non-fatal if webserver later shows `Listening at: http://0.0.0.0:8080`.
 
 - If task logs show `251001: Account must be specified`, the `snowflake_default` connection is missing the account field or has an invalid account format. Use only the Snowflake account identifier.
+
+- If Connection list is empty, rerun `docker compose up airflow-init` after updating `.env`. The init job writes `aws_default` and `snowflake_default` into Airflow metadata DB.
+
+- If `airflow-init` exits early, check that `SNOWFLAKE_ACCOUNT`, `SNOWFLAKE_USER`, and `SNOWFLAKE_PASSWORD` in `.env` are not empty/placeholder values.
