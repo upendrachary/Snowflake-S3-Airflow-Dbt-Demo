@@ -30,8 +30,8 @@ This repo provides a local development setup to orchestrate loading data from S3
    ```
 
 4. **Open Airflow UI**
-   - Default URL: `http://localhost:8080`
-   - If 8080 is already in use, set `AIRFLOW_HOST_PORT=8081` in `.env` and open `http://localhost:8081`
+   - Default URL: `http://localhost:8081`
+   - If you prefer 8080, set `AIRFLOW_HOST_PORT=8080` in `.env` and open `http://localhost:8080`
    - You can confirm the mapped port with:
      ```bash
      docker compose port airflow-webserver 8080
@@ -107,6 +107,6 @@ Once you have Snowflake and AWS set up, update `.env`, set your Airflow connecti
 
 ## Troubleshooting
 
-- If browser cannot open Airflow UI, run `docker compose ps` and check the `PORTS` column for `airflow-webserver` (for example `0.0.0.0:8081->8080/tcp`).
+- If browser cannot open Airflow UI, run `docker compose ps` and check the `PORTS` column for `airflow-webserver` (for example `0.0.0.0:8081->8080/tcp` (or another host port)).
 - The warning `the attribute `version` is obsolete` comes from Docker Compose V2 when a `version` field is present. This repo omits `version` to avoid that warning.
 - Long lists of `SyntaxWarning` messages from provider libraries during startup are non-fatal if webserver later shows `Listening at: http://0.0.0.0:8080`.
