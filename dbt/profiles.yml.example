@@ -1,0 +1,14 @@
+snowflake_s3_demo:
+  target: dev
+  outputs:
+    dev:
+      type: snowflake
+      account: "<ACCOUNT>"
+      user: "<USER>"
+      password: "<PASSWORD>"
+      role: "<ROLE>"
+      warehouse: "<WAREHOUSE>"
+      database: "DEMO_DB"
+      schema: "ANALYTICS"
+      threads: 4
+      client_session_keep_alive: false
